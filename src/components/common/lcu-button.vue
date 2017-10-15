@@ -26,6 +26,7 @@
 
 <style lang="stylus" scoped>
     .button
+        cusor pointer
         position relative
         width 100%
         background-color rgb(30, 35, 40)

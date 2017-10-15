@@ -13,7 +13,7 @@
         <div v-else="" class="body">
             <div class="left-sidebar">
                 <ul id="client-list">
-                    <li v-for="item in instances">
+                    <li v-for="item in instances" @click="selectToThis(item)">
                         <div class="sum-icon">
                             <img :src="getSummonerIcon(1)">
                         </div>
@@ -27,12 +27,20 @@
                     <lcu-button :type="manualButtonType" @click="addNewClient()">Add new Client</lcu-button>
                 </div>
             </div>
-            <div class="main">
-                <champ-select></champ-select>
-                <ready-check></ready-check>
-                <invites></invites>
-                <queue></queue>
-                <lobby></lobby>
+            <div v-if="selectedInstance" v-bind="selectedInstance" class="main">
+                <div class="header">
+                    <h1 :key="clientName"></h1>
+                </div>
+                <div class="tab-menu">
+                    Header
+                </div>
+                <div class="container">
+                    <champ-select></champ-select>
+                    <ready-check></ready-check>
+                    <invites></invites>
+                    <queue></queue>
+                    <lobby></lobby>
+                </div>
             </div>
         </div>
     </div>
@@ -128,7 +136,7 @@
 
         .left-sidebar
             width 300px
-            background-color #101217
+            background-color #000a13
             display flex
             flex-direction column
             box-shadow 0 0 15px 5px rgba(0,0,0,0.5)
@@ -147,6 +155,7 @@
                 overflow-x hidden
 
                 li
+                    background-color #101217
                     color rgba(255,255,255,0.5)
                     border-bottom 2px solid #32281f
                     transition all 0.2s
@@ -179,6 +188,20 @@
 
         .main
             width 100%
+            display flex
+            flex-flow column
+            color white
+
+            .header
+                height 150px
+                background-color rgba(0,0,0,0.6)
+
+            .tab-menu
+                background-color rgba(0,0,0,0.8)
+                height 100px
+
+            .container
+                height:100%;
 
     .notification
         z-index 1000

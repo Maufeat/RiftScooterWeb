@@ -1,13 +1,11 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
-import Lobby = require("../lobby/lobby.vue");
-import Queue = require("../queue/queue.vue");
-import ReadyCheck = require("../ready-check/ready-check.vue");
-import ChampSelect = require("../champ-select/champ-select.vue");
-import Invites = require("../invites/invites.vue");
-
 import { ddragon } from "../../constants";
+
+export interface LeagueClient{
+
+}
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -17,46 +15,21 @@ export interface Result {
     content: any;
 }
 
-// Represents an LCU Instance
-export class Instance{
-    // Is RiftScooter connected to the LCU instance
-    connected: boolean;
-    // Path used for the LCU Instance
-    path: string;
-    // Port used for the LCU Instance
-    port: number;
-    // Display Name
-    clientName: string;
-    // Display Status
-    clientStatus: string = "Status: " + this.connected;
-
-    constructor(connected: boolean, path: string, port: number, clientName: string) {
-        this.connected = connected;
-        this.path = path;
-        this.port = port;
-        this.clientName = clientName;
-    }
-}
-
 // Type 1: an observed path changed. Format: [1, path_that_changed, new_status, new_content]
 // Type 2: a request was completed. Format: [2, request_id, status, response]
 // Type 3: a response to an info request. Format: [3, conduit_version, machine_name]
-type WebsocketMessage = [0, string, any] | [1, string, number, any] | [2, number, number, any] | [3, string, string];
+type WebsocketMessage = [0, string, any] | [1, string, number, any] | [2, number, number, any] | [3, string, string] | [4, string, boolean];
 
 @Component({
     components: {
-        lobby: Lobby,
-        queue: Queue,
-        readyCheck: ReadyCheck,
-        champSelect: ChampSelect,
-        invites: Invites
     }
 })
 
 export default class Root extends Vue {
     connected = false;
     socket: WebSocket;
-    instances: Instance[] = [];
+    instances: LeagueClient[] = [];
+    selectedInstance: LeagueClient;
     notifications: string[] = [];
 
     manualButtonType = "confirm";
@@ -127,17 +100,21 @@ export default class Root extends Vue {
     handleWebsocketMessage = (msg: MessageEvent) => {
         const data: WebsocketMessage = JSON.parse(msg.data);
 
+        console.log(msg.data);
+
         if (data[0] === 0) {
             if(data[1] == "list"){
                 let instances = data[2];
                 for (let entry of instances) {
-                    this.instances.push(new Instance(entry["Connected"], entry["Path"], entry["Port"], "Client " + (this.instances.length + 1)));
+                    let newClient = new LeagueClient()
+                    this.instances.push(newClient);
                 }
-                //console.log(this.instances);
             }
             if(data[1] == "addToList"){
                 let instances = data[2];
-                this.instances.push(new Instance(instances["Connected"], instances["Path"], instances["Port"], "Client " + (this.instances.length + 1)));
+                let newClient = new LeagueClient();
+                //new Instance(instances["Connected"], instances["Path"], instances["Port"], "Client " + (this.instances.length + 1))
+                this.instances.push(newClient);
             }
         }
 
@@ -155,7 +132,15 @@ export default class Root extends Vue {
         if (data[0] === 3) {
             this.showNotification("Connected to " + data[2]);
         }
+
+        if (data[0] === 4){
+            console.log("PORT: " + data[1]);
+        }
     };
+
+    private selectToThis(instance : LeagueClient){
+        this.selectedInstance = instance;
+    }
 
     /**
      * Automatically (re)connects to the websocket.
@@ -193,11 +178,7 @@ export default class Root extends Vue {
      * Automatically (re)connects to the websocket.
      */
     private addNewClient() {
-        try {
-            this.socket.send("[99]");
-        } catch (e) {
-            console.log(e);
-        }
+        this.socket.send("[99]");
     }
 
     /**
