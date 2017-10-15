@@ -11,31 +11,38 @@
         </div>
 
         <div v-else="" class="body">
-            <div class="">
-                <ul id="example-1">
+            <div class="left-sidebar">
+                <ul id="client-list">
                     <li v-for="item in instances">
-                        {{ item.port }} | {{ item.path }} | {{ item.connected }}
+                        <div class="sum-icon">
+                            <img :src="getSummonerIcon(1)">
+                        </div>
+                        <div class="client-name">
+                            <h2>{{ item.clientName }}</h2>
+                            <small>{{ item.clientStatus }}</small>
+                        </div>
                     </li>
                 </ul>
+                <div class="btn-pad">
+                    <lcu-button :type="manualButtonType" @click="addNewClient()">Add new Client</lcu-button>
+                </div>
             </div>
-            <champ-select></champ-select>
-            <ready-check></ready-check>
-            <invites></invites>
-            <queue></queue>
-            <lobby></lobby>
+            <div class="main">
+                <champ-select></champ-select>
+                <ready-check></ready-check>
+                <invites></invites>
+                <queue></queue>
+                <lobby></lobby>
+            </div>
         </div>
-
-        <transition enter-active-class="slideInUp" leave-active-class="slideOutDown">
-            <div v-if="notification" class="notification">
-                {{ notification }}
-            </div>
-        </transition>
     </div>
 </template>
 
 <script lang="ts" src="./root.ts"></script>
 
 <style lang="stylus" scoped>
+    :focus
+        outline 0
     // Intro
     // Position the message in the center.
     .intro
@@ -111,8 +118,67 @@
     // Make sure the body has the full size.
     .body
         display flex
-        flex-direction column
+        flex-direction row
         height 100%
+        background-color black
+        background-image url(../../static/magic-background.jpg)
+        background-size cover
+        background-position center
+        overflow hidden
+
+        .left-sidebar
+            width 300px
+            background-color #101217
+            display flex
+            flex-direction column
+            box-shadow 0 0 15px 5px rgba(0,0,0,0.5)
+            z-index 9999
+            overflow hidden
+
+            .btn-pad
+                padding 15px
+
+            #client-list
+                height 100%
+                list-style none
+                padding 0
+                margin 0
+                overflow-y auto
+                overflow-x hidden
+
+                li
+                    color rgba(255,255,255,0.5)
+                    border-bottom 2px solid #32281f
+                    transition all 0.2s
+                    padding 10px
+                    cursor pointer
+                    display flex
+
+                    &:hover
+                        color rgba(255,255,255,0.8)
+                        border-color #7e633b
+                        background-color #14181d
+
+                    .sum-icon
+                        margin-right 10px
+                        img
+                            width 60px
+                            height 60px
+                            border 1px solid rgba(255, 255, 255, 0.2)
+                            ^[-1]:hover &
+                                border 1px solid rgba(255, 255, 255, 0.5)
+
+                    .client-name
+                        h2
+                            margin-top 7px
+                            margin-bottom 5px
+
+
+            button#button
+                margin-top auto
+
+        .main
+            width 100%
 
     .notification
         z-index 1000

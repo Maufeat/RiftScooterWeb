@@ -28,10 +28,9 @@
     .button
         position relative
         width 100%
-        height 120px
         background-color rgb(30, 35, 40)
         text-transform uppercase
-        font-size 60px
+        font-size 21px
         font-family "LoL Display Bold"
         transition 0.3s ease
 
@@ -55,7 +54,7 @@
             color #5c5b57
 
             .button-border
-                border 6px solid #5c5b57 !important
+                border 4px solid #5c5b57 !important
 
         .button-border
             transition 0.3s ease
@@ -64,6 +63,6 @@
             height 100%
             left -3px
             top -3px
-            border-width 6px
+            border-width 4px
             border-style solid
 </style>

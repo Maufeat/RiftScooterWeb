@@ -131,9 +131,6 @@
         margin-bottom 20px
 
     .no-lobby
-        background-image url(../../static/magic-background.jpg)
-        background-size cover
-        background-position center
         position relative
         flex 1
         display flex

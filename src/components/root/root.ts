@@ -7,6 +7,8 @@ import ReadyCheck = require("../ready-check/ready-check.vue");
 import ChampSelect = require("../champ-select/champ-select.vue");
 import Invites = require("../invites/invites.vue");
 
+import { ddragon } from "../../constants";
+
 // Represents a result from the LCU api.
 export interface Result {
     // Status code of the API call.
@@ -23,11 +25,16 @@ export class Instance{
     path: string;
     // Port used for the LCU Instance
     port: number;
+    // Display Name
+    clientName: string;
+    // Display Status
+    clientStatus: string = "Status: " + this.connected;
 
-    constructor(connected: boolean, path: string, port: number) {
+    constructor(connected: boolean, path: string, port: number, clientName: string) {
         this.connected = connected;
         this.path = path;
         this.port = port;
+        this.clientName = clientName;
     }
 }
 
@@ -124,9 +131,13 @@ export default class Root extends Vue {
             if(data[1] == "list"){
                 let instances = data[2];
                 for (let entry of instances) {
-                    this.instances.push(new Instance(entry["Connected"], entry["Path"], entry["Port"]));
+                    this.instances.push(new Instance(entry["Connected"], entry["Path"], entry["Port"], "Client " + (this.instances.length + 1)));
                 }
                 //console.log(this.instances);
+            }
+            if(data[1] == "addToList"){
+                let instances = data[2];
+                this.instances.push(new Instance(instances["Connected"], instances["Path"], instances["Port"], "Client " + (this.instances.length + 1)));
             }
         }
 
@@ -179,6 +190,17 @@ export default class Root extends Vue {
     }
 
     /**
+     * Automatically (re)connects to the websocket.
+     */
+    private addNewClient() {
+        try {
+            this.socket.send("[99]");
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    /**
      * Shows a connecting error in the second button.
      */
     private showConnectingError(message: string) {
@@ -196,5 +218,12 @@ export default class Root extends Vue {
         setTimeout(() => {
             this.notifications.splice(this.notifications.indexOf(content), 1);
         }, 8000);
+    }
+
+    /**
+     * @returns the path to the summoner icon for the inviter
+     */
+    getSummonerIcon(id: number): string {
+        return `http://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${id}.png`;
     }
 }
