@@ -13,13 +13,13 @@
         <div v-else="" class="body">
             <div class="left-sidebar">
                 <ul id="client-list">
-                    <li v-for="item in instances" @click="selectToThis(item)">
+                    <li v-for="client in instances" @click="selectToThis(client)">
                         <div class="sum-icon">
-                            <img :src="getSummonerIcon(1)">
+                            <img :src="getSummonerIcon(client.SummonerIcon)">
                         </div>
                         <div class="client-name">
-                            <h2>{{ item.clientName }}</h2>
-                            <small>{{ item.clientStatus }}</small>
+                            <h2>{{ client.DisplayName }}</h2>
+                            <small></small>
                         </div>
                     </li>
                 </ul>
@@ -27,20 +27,23 @@
                     <lcu-button :type="manualButtonType" @click="addNewClient()">Add new Client</lcu-button>
                 </div>
             </div>
-            <div v-if="selectedInstance" v-bind="selectedInstance" class="main">
-                <div class="header">
-                    <h1 :key="clientName"></h1>
-                </div>
-                <div class="tab-menu">
-                    Header
-                </div>
-                <div class="container">
-                    <champ-select></champ-select>
-                    <ready-check></ready-check>
-                    <invites></invites>
-                    <queue></queue>
-                    <lobby></lobby>
-                </div>
+            <div v-if="selectedInstance" v-bind:class="LeagueClient" class="main" id="">
+                    <div class="header">
+                        <h1>{{ selectedInstance.DisplayName }} </h1>
+                    </div>
+                    <div class="tab-menu">
+                        Header
+                    </div>
+                    <div class="container">
+                        <champ-select></champ-select>
+                        <ready-check></ready-check>
+                        <invites></invites>
+                        <queue></queue>
+                        <lobby></lobby>
+                    </div>
+            </div>
+            <div v-else="" class="bot-nofocus">
+                <h1>Please select or start an instance</h1>
             </div>
         </div>
     </div>
@@ -202,6 +205,15 @@
 
             .container
                 height:100%;
+
+        .bot-nofocus
+            width 100%
+            h1
+                text-align: center
+                line-height calc(100vh - 39px)
+                color rgb(255, 255, 255)
+                text-shadow 0 0 20px rgb(255, 35, 0)
+                text-transform uppercase
 
     .notification
         z-index 1000

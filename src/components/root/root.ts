@@ -3,8 +3,14 @@ import Component from "vue-class-component";
 
 import { ddragon } from "../../constants";
 
-export interface LeagueClient{
-
+export class LeagueClient{
+    Id: number;
+    Username:string;
+    Password:string;
+    Path:string;
+    Port:number;
+    SummonerIcon: number = 1;
+    DisplayName: string;
 }
 
 // Represents a result from the LCU api.
@@ -14,11 +20,6 @@ export interface Result {
     // Parsed JSON of the response body.
     content: any;
 }
-
-// Type 1: an observed path changed. Format: [1, path_that_changed, new_status, new_content]
-// Type 2: a request was completed. Format: [2, request_id, status, response]
-// Type 3: a response to an info request. Format: [3, conduit_version, machine_name]
-type WebsocketMessage = [0, string, any] | [1, string, number, any] | [2, number, number, any] | [3, string, string] | [4, string, boolean];
 
 @Component({
     components: {
@@ -36,109 +37,54 @@ export default class Root extends Vue {
     connecting = false;
     hostname = (localStorage && localStorage.getItem("hostname")) || "";
 
-    idCounter = 0;
-    observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
-
-    /**
-     * @returns the most recent notification, if there is one
-     */
-    get notification() {
-        return this.notifications[0];
-    }
-
-    /**
-     * Starts observing the specified url. The handler will be called
-     * whenever the endpoints contents or HTTP status change. Only a single
-     * instance can observe the same path at a time.
-     */
-    observe(path: RegExp | string, handler: (result: Result) => void) {
-        if (typeof path === "string") {
-            // Make initial request to populate the handler.
-            this.request(path).then(handler);
-
-            path = new RegExp("^" + path + "$");
-        }
-
-        this.observers.push({ matcher: path, handler });
-        this.socket.send(JSON.stringify([1, path.source])); // ask to observe the specified path.
-    }
-
-    /**
-     * Stop observing the specified path. Does nothing if the path
-     * isn't currently being observed.
-     */
-    unobserve(path: RegExp | string) {
-        if (typeof path === "string") path = new RegExp("^" + path + "$");
-
-        this.observers = this.observers.filter(x => {
-            if (x.matcher.toString() !== path.toString()) return true;
-
-            if (this.socket.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify([2, (path as RegExp).source])); // ask to stop observing
-            return false;
-        });
-    }
-
-    /**
-     * Makes a request to the specified LCU endpoint with the specified
-     * method and optional body. Returns a promise that resolves when the call
-     * completes. Note that this promise will never be rejected, even for non-200
-     * responses.
-     */
-    request(path: string, method: string = "GET", body?: string): Promise<Result> {
-        return new Promise(resolve => {
-            const id = this.idCounter++;
-            this.socket.send(JSON.stringify([3, id, path, method, body]));
-            this.requests[id] = resolve;
-        });
-    }
 
     /**
      * Handles any incoming messages from the websocket connection and notifies
      * listeners/resolves promises when applicable.
      */
-    handleWebsocketMessage = (msg: MessageEvent) => {
-        const data: WebsocketMessage = JSON.parse(msg.data);
-
-        console.log(msg.data);
-
-        if (data[0] === 0) {
-            if(data[1] == "list"){
-                let instances = data[2];
-                for (let entry of instances) {
-                    let newClient = new LeagueClient()
-                    this.instances.push(newClient);
+    handleWebsocketMessage = (event: any) => {
+        let data = JSON.parse(event.data);
+        switch(data.EventName)
+        {
+            case "Error":
+                console.log("Error: " + data);
+                break;
+            case "EventListInstance":
+                console.log("EventListInstance");
+                for (let entry of data.List) {
+                    this.addClient(entry);
                 }
-            }
-            if(data[1] == "addToList"){
-                let instances = data[2];
-                let newClient = new LeagueClient();
-                //new Instance(instances["Connected"], instances["Path"], instances["Port"], "Client " + (this.instances.length + 1))
-                this.instances.push(newClient);
-            }
-        }
-
-        if (data[0] === 1) {
-            this.observers
-                .filter(x => !!x.matcher.exec(data[1] as string))
-                .forEach(x => x.handler({ status: +data[2], content: data[3] }));
-        }
-
-        if (data[0] === 2 && this.requests[data[1] as number]) {
-            this.requests[data[1] as number]({ status: data[2], content: data[3] });
-            delete this.requests[data[1] as number];
-        }
-
-        if (data[0] === 3) {
-            this.showNotification("Connected to " + data[2]);
-        }
-
-        if (data[0] === 4){
-            console.log("PORT: " + data[1]);
+                break;
+            case "EventInstanceStarted":
+                console.log("EventInstanceStarted");
+                this.addClient(data.Instance);
+                break;
+            case "EventInstanceClosed":
+                console.log("EventInstanceClosed");
+                console.log(data.Id);
+                break;
+            case "EventInstanceMessage":
+                console.log("EventInstanceMessage");
+                console.log(data.Instance, JSON.parse(data.Data));
+                break;
+            default:
+                console.error("Unkown EventName: " + data.EventName)
         }
     };
 
+    private addClient(data: any){
+        let newClient = new LeagueClient();
+        newClient.Id = data["Id"];
+        newClient.DisplayName = "Test Add " + newClient.Id;
+        this.instances.push(newClient);
+    }
+
     private selectToThis(instance : LeagueClient){
+        instance.SummonerIcon = instance.SummonerIcon;
+        if(this.selectedInstance){
+            this.selectedInstance.IsSelected = false;
+        }
         this.selectedInstance = instance;
     }
 
@@ -150,12 +96,15 @@ export default class Root extends Vue {
         this.connecting = true;
 
         try {
-            this.socket = new WebSocket("ws://" + this.hostname + ":10200/socket");
+            this.socket = new WebSocket("ws://" + this.hostname + ":20000/");
 
             this.socket.onopen = () => {
                 this.connected = true;
                 this.connecting = false;
-                this.socket.send("[4]");
+                let list: { [l: string]: string; } = { };
+                list['RequestName'] = "RequestInstanceList";
+                console.log(list);
+                this.socket.send(JSON.stringify(list));
             };
 
             this.socket.onmessage = this.handleWebsocketMessage;
@@ -178,7 +127,10 @@ export default class Root extends Vue {
      * Automatically (re)connects to the websocket.
      */
     private addNewClient() {
-        this.socket.send("[99]");
+        let list: { [l: string]: string; } = { };
+        list['RequestName'] = "RequestInstanceStart";
+        list["Path"] = "E:\\Riot Games\\League of Legends";
+        this.socket.send(JSON.stringify(list));
     }
 
     /**
