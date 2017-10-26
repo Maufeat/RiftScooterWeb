@@ -13,7 +13,7 @@
         <div v-else="" class="body">
             <div class="left-sidebar">
                 <ul id="client-list">
-                    <li v-for="client in instances" @click="selectToThis(client)">
+                    <li v-for="client in instances" @click="selectToThis(client)" v-bind:class="{ active: client.Selected }">
                         <div class="sum-icon">
                             <img :src="getSummonerIcon(client.SummonerIcon)">
                         </div>
@@ -27,20 +27,15 @@
                     <lcu-button :type="manualButtonType" @click="addNewClient()">Add new Client</lcu-button>
                 </div>
             </div>
-            <div v-if="selectedInstance" v-bind:class="LeagueClient" class="main" id="">
-                    <div class="header">
-                        <h1>{{ selectedInstance.DisplayName }} </h1>
-                    </div>
-                    <div class="tab-menu">
-                        Header
-                    </div>
-                    <div class="container">
-                        <champ-select></champ-select>
-                        <ready-check></ready-check>
-                        <invites></invites>
-                        <queue></queue>
-                        <lobby></lobby>
-                    </div>
+            <div v-if="selected != -1" class="main">
+                <div class="header">
+                    <h1>{{ selectedInstance.DisplayName }} </h1>
+                </div>
+                <div class="tab-menu">
+                    Header
+                </div>
+                <div class="container">
+                </div>
             </div>
             <div v-else="" class="bot-nofocus">
                 <h1>Please select or start an instance</h1>
@@ -185,6 +180,14 @@
                             margin-top 7px
                             margin-bottom 5px
 
+                .active
+                    color rgba(255,255,255,0.8)
+                    border-color #7e6532
+                    background-color #1b2027
+                    &:hover
+                        color rgba(255,255,255,0.8)
+                        border-color #7e633b
+                        background-color #222931
 
             button#button
                 margin-top auto
@@ -198,6 +201,7 @@
             .header
                 height 150px
                 background-color rgba(0,0,0,0.6)
+                padding 0 25px;
 
             .tab-menu
                 background-color rgba(0,0,0,0.8)

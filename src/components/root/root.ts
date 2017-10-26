@@ -11,6 +11,7 @@ export class LeagueClient{
     Port:number;
     SummonerIcon: number = 1;
     DisplayName: string;
+    Selected:boolean = false;
 }
 
 // Represents a result from the LCU api.
@@ -28,6 +29,7 @@ export interface Result {
 
 export default class Root extends Vue {
     connected = false;
+    selected = -1;
     socket: WebSocket;
     instances: LeagueClient[] = [];
     selectedInstance: LeagueClient;
@@ -36,8 +38,6 @@ export default class Root extends Vue {
     manualButtonType = "confirm";
     connecting = false;
     hostname = (localStorage && localStorage.getItem("hostname")) || "";
-
-    requests: { [key: number]: Function } = {};
 
     /**
      * Handles any incoming messages from the websocket connection and notifies
@@ -66,7 +66,7 @@ export default class Root extends Vue {
                 break;
             case "EventInstanceMessage":
                 console.log("EventInstanceMessage");
-                console.log(data.Instance, JSON.parse(data.Data));
+                console.log(JSON.parse(data.Data));
                 break;
             default:
                 console.error("Unkown EventName: " + data.EventName)
@@ -76,16 +76,18 @@ export default class Root extends Vue {
     private addClient(data: any){
         let newClient = new LeagueClient();
         newClient.Id = data["Id"];
-        newClient.DisplayName = "Test Add " + newClient.Id;
+        newClient.DisplayName = "Not Logged In";
         this.instances.push(newClient);
     }
 
     private selectToThis(instance : LeagueClient){
-        instance.SummonerIcon = instance.SummonerIcon;
-        if(this.selectedInstance){
-            this.selectedInstance.IsSelected = false;
+        this.selected = instance.Id;
+        if(this.selectedInstance != null){
+            //DeselectOld
+            this.selectedInstance.Selected = false;
         }
         this.selectedInstance = instance;
+        this.selectedInstance.Selected = true;
     }
 
     /**
