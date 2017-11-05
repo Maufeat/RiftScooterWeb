@@ -1,11 +1,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
-import LeagueClientComponent from "./league-client.vue";
-
 import { ddragon } from "../../constants";
-
-Vue.component("league-client", LeagueClientComponent);
 
 
 export interface LeagueClient{
@@ -28,7 +24,6 @@ export interface Result {
 
 @Component({
     components: {
-        leagueClient: LeagueClientComponent
     }
 })
 export default class Root extends Vue {
