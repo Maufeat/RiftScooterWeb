@@ -15,10 +15,10 @@
                 <ul id="client-list">
                     <li v-for="client in instances" @click="selectToThis(client)" v-bind:class="{ active: client.Selected }">
                         <div class="sum-icon">
-                            <img :src="getSummonerIcon(client.SummonerIcon)">
+                            <img :src="getSummonerIcon(client.summoner.profileIconId)">
                         </div>
                         <div class="client-name">
-                            <h2>{{ client.DisplayName }}</h2>
+                            <h2>{{ client.summoner.displayName }}</h2>
                             <small></small>
                         </div>
                     </li>
@@ -28,14 +28,10 @@
                 </div>
             </div>
             <div v-if="selected != -1" class="main">
-                <div class="header">
-                    <h1>{{ selectedInstance.DisplayName }} </h1>
-                </div>
-                <div class="tab-menu">
-                    Header
-                </div>
-                <div class="container">
-                </div>
+                <league-client
+                        :key="selectedInstance.Id"
+                        :instance="selectedInstance">
+                </league-client>
             </div>
             <div v-else="" class="bot-nofocus">
                 <h1>Please select or start an instance</h1>
@@ -196,19 +192,17 @@
             width 100%
             display flex
             flex-flow column
-            color white
+            color #242929
 
             .header
                 height 150px
-                background-color rgba(0,0,0,0.6)
                 padding 0 25px;
 
             .tab-menu
-                background-color rgba(0,0,0,0.8)
                 height 100px
 
             .container
-                height:100%;
+                height 100%
 
         .bot-nofocus
             width 100%

@@ -1,17 +1,21 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
+import LeagueClientComponent from "./league-client.vue";
+
 import { ddragon } from "../../constants";
 
-export class LeagueClient{
+Vue.component("league-client", LeagueClientComponent);
+
+
+export interface LeagueClient{
     Id: number;
     Username:string;
     Password:string;
     Path:string;
     Port:number;
-    SummonerIcon: number = 1;
-    DisplayName: string;
-    Selected:boolean = false;
+    summoner: { displayName: string, profileIconId: number };
+    Selected:boolean;
 }
 
 // Represents a result from the LCU api.
@@ -24,9 +28,9 @@ export interface Result {
 
 @Component({
     components: {
+        leagueClient: LeagueClientComponent
     }
 })
-
 export default class Root extends Vue {
     connected = false;
     selected = -1;
@@ -51,8 +55,8 @@ export default class Root extends Vue {
                 console.log("Error: " + data);
                 break;
             case "EventListInstance":
-                console.log("EventListInstance");
                 for (let entry of data.List) {
+                    console.log(entry);
                     this.addClient(entry);
                 }
                 break;
@@ -65,18 +69,19 @@ export default class Root extends Vue {
                 console.log(data.Id);
                 break;
             case "EventInstanceMessage":
-                console.log("EventInstanceMessage");
-                console.log(JSON.parse(data.Data));
+                let parsedData = JSON.parse(data.Data);
+                console.log(parsedData[2].uri);
+                console.log(parsedData[2]);
                 break;
             default:
-                console.error("Unkown EventName: " + data.EventName)
+                console.error("Unknown EventName: " + data.EventName)
         }
     };
 
     private addClient(data: any){
-        let newClient = new LeagueClient();
+        const newClient: LeagueClient = data;
         newClient.Id = data["Id"];
-        newClient.DisplayName = "Not Logged In";
+        newClient.summoner = { displayName: "Not Logged in", profileIconId: 0 };
         this.instances.push(newClient);
     }
 
