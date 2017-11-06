@@ -1,12 +1,18 @@
 <template>
     <div>
         <div v-if="!connected" class="intro">
-            <span class="header">Welcome to RiftScooter</span>
+            <div class="background-greyscale">
+                <div class="gradient"></div>
+            </div>
+            <h2>Welcome to VoliBot</h2>
 
             <div class="manual">
-                <span>Enter your computer's IP address.</span>
-                <input v-model="hostname" placeholder="192.168.1.1">
-                <lcu-button :disabled="(!hostname) || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
+                <div class="form">
+                    <span>IP address</span>
+                    <input v-model="hostname" placeholder="192.168.1.1">
+                    <lcu-button :disabled="(!hostname) || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
+                </div>
+                <small>Version: 0.0.0</small>
             </div>
         </div>
 
@@ -49,7 +55,7 @@
     // Position the message in the center.
     .intro
         position absolute
-        background-image url(../../static/magic-background.jpg)
+        background-color: #0a0a0c
         left 0
         top 0
         right 0
@@ -59,32 +65,94 @@
         justify-content center
         align-items center
 
-        .header
-            position absolute
-            top 100px
-            left 0
-            right 0
+        .background-greyscale
+            background-image: url(http://static.zerochan.net/Volibear.full.1523582.jpg);
+            background-size: cover;
+            background-position: left top;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 20%;
+            left: 0;
+            opacity: .2;
+
+            .gradient
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background-color: #0a0a0c;
+                background-image: linear-gradient(180deg,#0a0a0c,transparent,#0a0a0c);
+                background-color: transparent;
+
+        h2
             text-align center
             font-family "LoL Header"
-            font-size 80px
             color #f0e6d3
-            padding 50px
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-smoothing: antialiased;
+            font-size: 38px;
             & > small
                 font-size 60px
                 color #dcd2bf
 
         .automatic, .manual
-            width 95%
+            width 350px
             display flex
             flex-direction column
             justify-content center
             align-items center
-            padding 20px 0
-        .automatic > span, .manual > span
+            text-align: left;
+            max-width: 380px;
+            margin: 0 auto;
+            padding: 38px;
+            padding-bottom: 50px;
+            background: rgba(1,10,19,.85);
+            border: 1px solid transparent;
+            border-color: #6a4f28;
+            -moz-border-image: -moz-linear-gradient(top,#6a4f28 0,#b78c3d 100%);
+            -webkit-border-image: -webkit-linear-gradient(top,#6a4f28 0,#b78c3d 100%);
+            border-image: linear-gradient(to bottom,#b78c3d 0,#6a4f28 100%);
+            border-image-slice: 1;
+            position: relative;
+            &:before
+                display: block;
+                content: '';
+                border: 1px solid #f0e6d2;
+                opacity: .15;
+                position: absolute;
+                top: 7px;
+                right: 7px;
+                bottom: 7px;
+                left: 7px;
+                z-index: 1;
+        small
+            font-size: 55%;
+            color: white;
+            opacity: 0.5;
+            text-transform: uppercase;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+        .form
+            position: relative;
+            z-index: 2;
+        .manual span
             color #f0e6d3
             font-family "LoL Body"
-            font-size 40px
-            padding 10px 10px 20px 20px
+            font-family: "Times New Roman",sans-serif;
+            font-weight: 700;
+            letter-spacing: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-smoothing: antialiased;
+            color: #f0e6d2;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
             align-self flex-start
         .or
             width 100%
@@ -113,6 +181,13 @@
             box-shadow: 0 3px 5px rgba(1,10,19,.5) inset;
             padding: 8px 30px 8px 10px;
             border-radius: 0;
+            transition: 0.2s all
+            &:focus
+                border-color: #0596aa;
+                background: #333639;
+                outline: 0;
+            &:hover
+                border-color: #048091;
 
     // Make sure the body has the full size.
     .body
