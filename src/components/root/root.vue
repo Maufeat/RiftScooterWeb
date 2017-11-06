@@ -14,6 +14,10 @@
                 </div>
                 <small>Version: 0.0.0</small>
             </div>
+
+
+            <lcu-button class="get-voli" :type="normal" @click="connect()">Get RiftScooter</lcu-button>
+
         </div>
 
         <div v-else="" class="body">
@@ -43,6 +47,12 @@
                 <h1>Please select or start an instance</h1>
             </div>
         </div>
+
+        <transition enter-active-class="fadeIn" leave-active-class="fadeOut">
+            <div v-if="notification" class="notification">
+                {{ notification }}
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -64,6 +74,10 @@
         flex-direction column
         justify-content center
         align-items center
+
+        .get-voli
+            margin: 25px;
+            width: 250px;
 
         .background-greyscale
             background-image: url(http://static.zerochan.net/Volibear.full.1523582.jpg);
@@ -286,17 +300,16 @@
                 text-transform uppercase
 
     .notification
-        z-index 1000
-        position absolute
-        background-color black
-        padding 10px
-        text-transform uppercase
-        border-top 2px solid #785a28
-        bottom 0
-        left 0
-        right 0
-        color #d5d9c9
-        font-family "LoL Body"
-        font-size 40px
-        text-align center
+        z-index: 1000;
+        position: absolute;
+        background-color: rgba(200, 170, 109, 0.13);
+        padding: 10px 25px;
+        text-transform: uppercase;
+        border: 2px solid rgba(120, 90, 40, 0.7);
+        bottom: 15;
+        width: auto;
+        right: 15;
+        color: #d5d9c9;
+        font-family: "LoL Body";
+        text-align: center;
 </style>

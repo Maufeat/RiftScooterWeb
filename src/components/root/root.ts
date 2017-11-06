@@ -39,6 +39,13 @@ export default class Root extends Vue {
     hostname = (localStorage && localStorage.getItem("hostname")) || "";
 
     /**
+     * @returns the most recent notification, if there is one
+     */
+    get notification() {
+        return this.notifications[0];
+    }
+
+    /**
      * Handles any incoming messages from the websocket connection and notifies
      * listeners/resolves promises when applicable.
      */
