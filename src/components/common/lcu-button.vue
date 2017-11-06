@@ -1,6 +1,5 @@
 <template>
-    <button class="button" :class="className + ' ' + type" @click="$emit('click')" :disabled="disabled">
-        <div class="button-border"></div>
+    <button class="button_test" :class="className + ' ' + type" @click="$emit('click')" :disabled="disabled">
         <slot></slot>
     </button>
 </template>
@@ -25,45 +24,119 @@
 </script>
 
 <style lang="stylus" scoped>
-    .button
-        cusor pointer
-        position relative
-        width 100%
-        background-color rgb(30, 35, 40)
-        text-transform uppercase
-        font-size 21px
-        font-family "LoL Display Bold"
-        transition 0.3s ease
+    .button_test
+        cursor: pointer
+        width: 100%
+        padding: 12px;
+        background-color: #1e2328;
+        border: 2px solid transparent;
+        border-color: #0596aa;
+        -moz-border-image: -moz-linear-gradient(top,#0596aa 0,#005a82 100%);
+        -webkit-border-image: -webkit-linear-gradient(top,#0596aa 0,#005a82 100%);
+        border-image: linear-gradient(to bottom,#0596aa 0,#005a82 100%);
+        border-image-slice: 1;
+        position: relative;
+        font-family "LoL Display Bold",sans-serif
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-smoothing: antialiased;
+        font-size: 14px;
+        letter-spacing: 1.2px;
+        color: #b2d9db;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all .4s ease;
+
+        &:hover
+            &:before
+                opacity: .5;
+                animation-play-state: running;
+            &:after
+                animation-name: flashingBG;
+                animation-duration: .8s;
+                animation-timing-function: ease-out;
+                animation-fill-mode: forwards;
+
+        &:before
+            content: '';
+            display: block;
+            background: url(https://signup.na.leagueoflegends.com/assets/img/button-bg-pattern.png) repeat-x top left;
+            background-size: auto 100%;
+            background-position: 0 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: .3;
+            animation: movingBG 500s linear infinite;
+            animation-play-state: paused;
+            will-change: background-position;
+
+        &:after
+            content: '';
+            display: block;
+            background: linear-gradient(to bottom,rgba(205,250,250,0) 0,rgba(205,250,250,0) 60%,rgba(205,250,250,.4) 100%);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
 
         &.normal
             color #cdbe91
-            .button-border
-                border-image linear-gradient(to top, #785b28 0%, #c89c3c 55%, #c8a355 71%, #c8aa6e 100%) 1 stretch
+            border-image linear-gradient(to top, #785b28 0%, #c89c3c 55%, #c8a355 71%, #c8aa6e 100%) 1 stretch
+            &:hover
+                background-color: #3d3e2f;
+                color #d7c998
+            &:before
+                filter: hue-rotate(200deg);
 
         &.confirm
-            color #a3c7c7
-            .button-border
-                border-image linear-gradient(to top, #0d404c 0%, #0596aa 44%, #0596aa 93%, #0ac8b9 100%) 1 stretch
+            border-color: #0596aa;
+            -moz-border-image: -moz-linear-gradient(top,#0596aa 0,#005a82 100%);
+            -webkit-border-image: -webkit-linear-gradient(top,#0596aa 0,#005a82 100%);
+            border-image: linear-gradient(to bottom,#0596aa 0,#005a82 100%);
+            border-image-slice: 1;
+            &:hover
+                background-color: #202f3e;
+                color: #cdfafa;
 
         &.deny
             color #bd253c
-            .button-border
-                border-image linear-gradient(to top, #c6403b 0%, #f9413f 44%, #ec3930 93%, #ee241d 100%) 1 stretch
+            border-image linear-gradient(to top, #c6403b 0%, #f9413f 44%, #ec3930 93%, #ee241d 100%) 1 stretch
+            &:hover
+                background-color: #3e2625;
+                color #cd253c
+            &:before
+                filter: hue-rotate(160deg);
 
         &[disabled]
+            cursor not-allowed
             background-color #1e2328
             color #5c5b57
+            border-image linear-gradient(to top, grey 0%, #a99092 44%, grey 93%, #a99092 100%) 1 stretch
+            filter: grayscale(100%);
+            &:hover
+                color #5c5b57
+                background-color #1e2328
+                &:before
+                    animation-play-state: paused;
+                    opacity: .3;
+                &:after
+                    display none
 
-            .button-border
-                border 4px solid #5c5b57 !important
+    @keyframes movingBG
+        from
+            background-position:0 0
+        to
+            background-position:10000px 0
 
-        .button-border
-            transition 0.3s ease
-            position absolute
-            width 100%
-            height 100%
-            left -3px
-            top -3px
-            border-width 4px
-            border-style solid
+    @keyframes flashingBG
+        0%
+            opacity:0
+        100%
+            opacity:.3
 </style>

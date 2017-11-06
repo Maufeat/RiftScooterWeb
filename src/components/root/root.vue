@@ -104,18 +104,15 @@
             font-size 40px
         .manual input
             width 100%
-            box-sizing border-box
-            height 110px
-            padding 20px
-            margin 10px 60px 30px 60px
-            -webkit-appearance none
-            outline none
-            border-radius 0
-            color #f0e6d2
-            font-size 40px
+            color: rgb(240, 230, 210)
+            margin:15px 0
             font-family "LoL Body"
-            border 3px solid #785a28
             background-color black
+            background: #1e2328;
+            border: 1px solid #785b28;
+            box-shadow: 0 3px 5px rgba(1,10,19,.5) inset;
+            padding: 8px 30px 8px 10px;
+            border-radius: 0;
 
     // Make sure the body has the full size.
     .body
