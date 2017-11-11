@@ -35,6 +35,7 @@ export default class Root extends Vue {
     notifications: string[] = [];
 
     manualButtonType = "confirm";
+    normalButtonType = "normal";
     connecting = false;
     hostname = (localStorage && localStorage.getItem("hostname")) || "";
 
@@ -149,7 +150,7 @@ export default class Root extends Vue {
         this.connecting = false;
         this.manualButtonType = "deny";
         setTimeout(() => this.manualButtonType = "confirm", 2500);
-        this.showNotification("Failed to connect: " + message + ". Is Conduit running?");
+        this.showNotification("Failed to connect: " + message + ". Is VoliBot running?");
     }
 
     /**

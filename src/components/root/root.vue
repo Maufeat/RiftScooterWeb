@@ -1,71 +1,102 @@
 <template>
     <div>
-        <div v-if="!connected" class="intro">
-            <div class="background-greyscale">
-                <div class="gradient"></div>
-            </div>
-            <h2>Welcome to VoliBot</h2>
-
-            <div class="manual">
-                <div class="form">
-                    <span>IP address</span>
-                    <input v-model="hostname" placeholder="192.168.1.1">
-                    <lcu-button :disabled="(!hostname) || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
-                </div>
-                <small>Version: 0.0.0</small>
-            </div>
-
-
-            <lcu-button class="get-voli" :type="normal" @click="connect()">Get RiftScooter</lcu-button>
-
+        <div class="background-greyscale">
+            <div class="gradient"></div>
         </div>
 
-        <div v-else="" class="body">
-            <div class="left-sidebar">
-                <ul id="client-list">
-                    <li v-for="client in instances" @click="selectToThis(client)" v-bind:class="{ active: client.Selected }">
-                        <div class="sum-icon">
-                            <img :src="getSummonerIcon(client.summoner.profileIconId)">
-                        </div>
-                        <div class="client-name">
-                            <h2>{{ client.summoner.displayName }}</h2>
-                            <small></small>
-                        </div>
-                    </li>
-                </ul>
-                <div class="btn-pad">
-                    <lcu-button :type="manualButtonType" @click="addNewClient()">Add new Client</lcu-button>
+        <div class="body">
+            <div v-if="!connected" class="intro">
+                <h2>Welcome to VoliBot</h2>
+
+                <div class="manual">
+                    <div class="form">
+                        <span>IP address</span>
+                        <input v-model="hostname" placeholder="192.168.1.1">
+                        <lcu-button :disabled="(!hostname) || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
+                    </div>
+                    <small>Version: 1.0.0</small>
+                </div>
+
+
+                <lcu-button class="get-voli" :type="normalButtonType" onclick="location.href='http://volibot.com/download'">Get VoidRush</lcu-button>
+
+            </div>
+
+            <div v-else="" class="main">
+                <div class="left-sidebar">
+                    <ul id="client-list">
+                        <li v-for="client in instances" @click="selectToThis(client)" v-bind:class="{ active: client.Selected }">
+                            <div class="sum-icon">
+                                <img :src="getSummonerIcon(client.summoner.profileIconId)">
+                            </div>
+                            <div class="client-name">
+                                <h2>{{ client.summoner.displayName }}</h2>
+                                <small></small>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="btn-pad">
+                        <lcu-button :type="manualButtonType" @click="addNewClient()">Add new Client</lcu-button>
+                    </div>
+                </div>
+                <div v-if="selected != -1" class="instance">
+                    <league-client
+                            :key="selectedInstance.Id"
+                            :instance="selectedInstance">
+                    </league-client>
+                </div>
+                <div v-else="" class="bot-nofocus">
+                    <h1>Please select or start an instance</h1>
                 </div>
             </div>
-            <div v-if="selected != -1" class="main">
-                <league-client
-                        :key="selectedInstance.Id"
-                        :instance="selectedInstance">
-                </league-client>
-            </div>
-            <div v-else="" class="bot-nofocus">
-                <h1>Please select or start an instance</h1>
-            </div>
-        </div>
 
-        <transition enter-active-class="fadeIn" leave-active-class="fadeOut">
-            <div v-if="notification" class="notification">
-                {{ notification }}
-            </div>
-        </transition>
+            <transition enter-active-class="fadeIn" leave-active-class="fadeOut">
+                <div v-if="notification" class="notification">
+                    {{ notification }}
+                </div>
+            </transition>
+
+        </div>
     </div>
 </template>
 
 <script lang="ts" src="./root.ts"></script>
 
 <style lang="stylus" scoped>
+
     :focus
         outline 0
+
+    .body
+        background-color: #0a0a0c
+        height: 100%;
+        width: 100%;
+
+    .background-greyscale
+        background-image: url(http://static.zerochan.net/Volibear.full.1523582.jpg);
+        background-size: cover;
+        background-position: left top;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 20%;
+        left: 0;
+        opacity: .2;
+
+        .gradient
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 1;
+            bottom: 0;
+            left: 0;
+            background-color: #0a0a0c;
+            background-image: linear-gradient(180deg,#0a0a0c,transparent,#0a0a0c);
+            background-color: transparent;
     // Intro
     // Position the message in the center.
     .intro
         position absolute
-        background-color: #0a0a0c
         left 0
         top 0
         right 0
@@ -75,30 +106,16 @@
         justify-content center
         align-items center
 
+        .divider
+            margin: 20px auto;
+            height: 1px;
+            max-width: 765px;
+            border: 0;
+            background: linear-gradient(to right,transparent 0,#372e19 15%,#694b21 50%,#372e19 85%,transparent 100%);
+
         .get-voli
             margin: 25px;
             width: 250px;
-
-        .background-greyscale
-            background-image: url(http://static.zerochan.net/Volibear.full.1523582.jpg);
-            background-size: cover;
-            background-position: left top;
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 20%;
-            left: 0;
-            opacity: .2;
-
-            .gradient
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                background-color: #0a0a0c;
-                background-image: linear-gradient(180deg,#0a0a0c,transparent,#0a0a0c);
-                background-color: transparent;
 
         h2
             text-align center
@@ -204,19 +221,15 @@
                 border-color: #048091;
 
     // Make sure the body has the full size.
-    .body
+    .main
         display flex
         flex-direction row
         height 100%
-        background-color black
-        background-image url(../../static/magic-background.jpg)
-        background-size cover
-        background-position center
         overflow hidden
 
         .left-sidebar
             width 300px
-            background-color #000a13
+            background-color: rgba(0, 10, 19, 0.7);
             display flex
             flex-direction column
             box-shadow 0 0 15px 5px rgba(0,0,0,0.5)
@@ -274,10 +287,11 @@
             button#button
                 margin-top auto
 
-        .main
+        .instance
             width 100%
             display flex
             flex-flow column
+            z-index:5;
             color #242929
 
             .header
